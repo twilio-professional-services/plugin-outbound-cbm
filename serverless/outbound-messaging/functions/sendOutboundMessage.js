@@ -1,128 +1,45 @@
 const TokenValidator = require("twilio-flex-token-validator").functionValidator;
+const { createOutboundCustomerConversation } = require(Runtime.getFunctions()[
+  "api-helpers/conversations_helper"
+].path);
 
-// Create a flex interaction that targets the agent with a task and add in a message to the conversation
-const openAChatTask = async (
-  client,
-  To,
-  From,
-  Body,
-  WorkerFriendlyName,
-  routingProperties
-) => {
-  const channelType = To.startsWith("whatsapp") ? "whatsapp" : "sms";
-  console.log(To, From, Body, WorkerFriendlyName, routingProperties);
-  const interaction = await client.flexApi.v1.interaction.create({
-    channel: {
-      type: channelType,
-      initiated_by: "agent",
-      participants: [
-        {
-          address: To,
-          proxy_address: From,
-        },
-      ],
-    },
-    routing: {
-      properties: {
-        ...routingProperties,
-        task_channel_unique_name: "chat",
-        attributes: {
-          from: To,
-          direction: "outbound",
-          customerName: "Customer",
-          customerAddress: To,
-          twilioNumber: From,
-          channelType: channelType,
-        },
-      },
-    },
-  });
+const { sendOutboundMessageAndWaitForReply } = require(Runtime.getFunctions()[
+  "outbound-helpers/sendOutboundMessageAndWaitForReply"
+].path);
 
-  console.log(interaction);
-  const taskAttributes = JSON.parse(interaction.routing.properties.attributes);
-  console.log(taskAttributes);
+const { createOutboundFlexConversation } = require(Runtime.getFunctions()[
+  "outbound-helpers/createOutboundFlexConversation"
+].path);
 
-  const message = await client.conversations
-    .conversations(taskAttributes.conversationSid)
-    .messages.create({ author: WorkerFriendlyName, body: Body });
-
-  console.log(message);
-
-  return {
-    success: true,
-    interactionSid: interaction.sid,
-    conversationSid: taskAttributes.conversationSid,
-  };
+const directionText = (taskDirection) => {
+  if (!taskDirection) return "";
+  switch (taskDirection.toLowerCase()) {
+    case "inbound":
+      return "Inbound";
+    case "outbound":
+      return "Outbound";
+    default:
+      return "";
+  }
 };
 
-const sendOutboundMessage = async (
-  client,
-  To,
-  From,
-  Body,
-  KnownAgentRoutingFlag,
-  WorkerFriendlyName,
-  InboundStudioFlow
+const existingOpenConversationResponse = (
+  callback,
+  response,
+  existingConversationDetails,
+  to
 ) => {
-  const friendlyName = `Outbound $(From) -> $(To)`;
-  console.log(friendlyName);
+  const direction = directionText(existingConversationDetails.taskDirection);
+  const agentName = existingConversationDetails.agentName
+    ? ` with ${existingConversationDetails.agentName}`
+    : "";
 
-  // Set flag in channel attribtues so Studio knows if it should set task attribute to target known agent
-  let converstationAttributes = { KnownAgentRoutingFlag };
-  if (KnownAgentRoutingFlag)
-    converstationAttributes.KnownAgentWorkerFriendlyName = WorkerFriendlyName;
-  const attributes = JSON.stringify(converstationAttributes);
-
-  // Create Channel
-  const channel = await client.conversations.conversations.create({
-    friendlyName,
-    attributes,
+  response.appendHeader("Content-Type", "application/json");
+  response.setBody({
+    success: false,
+    errorMessage: `Error sending message. There is an open ${direction} conversation already to ${to} ${agentName}`,
   });
-
-  console.log(channel);
-  try {
-    // Add customer to channel
-    const participant = await client.conversations
-      .conversations(channel.sid)
-      .participants.create({
-        "messagingBinding.address": To,
-        "messagingBinding.proxyAddress": From,
-      });
-
-    console.log(participant);
-  } catch (error) {
-    console.log(error);
-
-    if (error.code === 50416)
-      return {
-        success: false,
-        errorMessage: `Error sending message. There is an open conversation already to ${To}`,
-      };
-    else
-      return {
-        success: false,
-        errorMessage: `Error sending message. Error occured adding ${To} channel`,
-      };
-  }
-
-  // Point the channel to Studio
-  const webhook = client.conversations
-    .conversations(channel.sid)
-    .webhooks.create({
-      target: "studio",
-      configuration: { flowSid: InboundStudioFlow },
-    });
-
-  console.log(webhook);
-
-  // Add agents initial message
-  const message = await client.conversations
-    .conversations(channel.sid)
-    .messages.create({ author: WorkerFriendlyName, body: Body });
-
-  console.log(message);
-
-  return { success: true, channelSid: channel.sid };
+  return callback(null, response);
 };
 
 exports.handler = TokenValidator(async function (context, event, callback) {
@@ -152,12 +69,62 @@ exports.handler = TokenValidator(async function (context, event, callback) {
   response.appendHeader("Access-Control-Allow-Headers", "Content-Type");
 
   try {
-    let sendResponse = null;
+    let customerConversation = undefined;
+    let reusingExistingConversation = false;
 
-    if (OpenChatFlag) {
-      // create task and add the message to a channel
-      sendResponse = await openAChatTask(
+    // either create a new conversation or if there is already an active conversation in progress
+    // then get its details and depending on outbound scenario we may be able to re-use it
+    const { newConversation, existingConversationDetails } =
+      await createOutboundCustomerConversation(client, WorkspaceSid, To, From);
+
+    // Handle existing conversation in progress
+    if (existingConversationDetails) {
+      if (!OpenChatFlag && !existingConversationDetails.taskExists) {
+        // For the scenario where:
+        // "We are waiting until the customer replies before creating a task &&
+        // there is an existing conversation &&
+        // existing conversation is waiting for customer to reply before creating a task"
+        //
+        // Then we are OK to re-use the existing channel and add messages to it
+        console.log(
+          "There was already an active conversation waiting for customer to reply - reuse it",
+          existingConversationDetails.conversation.sid
+        );
+
+        customerConversation = existingConversationDetails.conversation;
+        reusingExistingConversation = true;
+      } else {
+        return existingOpenConversationResponse(
+          callback,
+          response,
+          existingConversationDetails,
+          To
+        );
+      }
+    } else {
+      customerConversation = newConversation;
+    }
+
+    // We have a conversation resource to use. Check if we are a send and wait for reply sceanrio
+    // or if we need to use Interactins API to creaet a task.
+
+    let responseBody = {};
+
+    if (!OpenChatFlag) {
+      responseBody = await sendOutboundMessageAndWaitForReply(
         client,
+        customerConversation,
+        Body,
+        KnownAgentRoutingFlag,
+        WorkerFriendlyName,
+        WorkerSid,
+        InboundStudioFlow,
+        reusingExistingConversation
+      );
+    } else {
+      responseBody = await createOutboundFlexConversation(
+        client,
+        customerConversation,
         To,
         From,
         Body,
@@ -169,21 +136,10 @@ exports.handler = TokenValidator(async function (context, event, callback) {
           worker_sid: WorkerSid,
         }
       );
-    } else {
-      // create a channel but wait until customer replies before creating a task
-      sendResponse = await sendOutboundMessage(
-        client,
-        To,
-        From,
-        Body,
-        KnownAgentRoutingFlag,
-        WorkerFriendlyName,
-        InboundStudioFlow
-      );
     }
 
     response.appendHeader("Content-Type", "application/json");
-    response.setBody(sendResponse);
+    response.setBody(responseBody);
     // Return a success response using the callback function.
     callback(null, response);
   } catch (err) {
