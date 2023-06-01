@@ -1,21 +1,23 @@
 {
   "name": "outbound-cbm",
-  "version": "0.0.3",
+  "version": "0.0.2",
   "private": true,
   "scripts": {
     "postinstall": "flex-plugin pre-script-check"
+
   },
   "dependencies": {
     "@twilio-paste/core": "^10.14.0",
     "@twilio-paste/icons": "^5.7.0",
-    "@twilio/flex-plugin-scripts": "5.1.0",
-    "google-libphonenumber": "^3.2.27",
+    "@twilio/flex-plugin-scripts": "6.1.2",
     "prop-types": "^15.7.2",
     "react": "17.0.2",
-    "react-dom": "17.0.2"
+    "react-dom": "17.0.2",
+    "google-libphonenumber": "^3.2.27"
   },
   "devDependencies": {
-    "@twilio/flex-ui": "2.0.0-beta.1",
+    "@twilio/flex-ui": "2.1.1",
     "react-test-renderer": "17.0.2"
   }
 }
+

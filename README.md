@@ -30,10 +30,10 @@ As well as providing the option to add a free form message there is a drop down 
 Our docs cover WhatsApp Templates in more detail [here.](https://www.twilio.com/docs/whatsapp/tutorial/send-whatsapp-notification-messages-templates)
 
 Note this is a POC/example of how to implement outbound messaging. In a production deployment consideration should be give to:
+
 - Provide additional logic to not allow free form messages outside of the 24 hour session (one option could be to track whatsapp numbers and last inbound message in a Sync map. (Consider Sync RPS and object limits in large applications) )
 - Outside of the 24 hour session enforce that templates can be used and allow for dynamic content to be inserted into the outbound template message according to the template placeholdes {{...}}
 - The canned messages/templates are hard coded in src/utils/templates.js. A more flexible option would be to have an endpoint that the plugin can reach out to GET the current templates from a config file.
-
 
 ## Actions
 
@@ -123,7 +123,7 @@ To handle the use case of inbound replies from the customer needing to create a 
 These are then available in the trigger and modifying the SendToFlex attributes as below will populate the task attributes for the TaskRouter Workflow.
 
 ```
-{"KnownAgentRoutingFlag":"{{trigger.conversation.ChannelAttributes.KnownAgentRoutingFlag}}", "KnownAgentWorkerFriendlyName":"{{trigger.conversation.ChannelAttributes.KnownAgentWorkerFriendlyName}}"}
+{"KnownAgentRoutingFlag":"{{trigger.conversation.ChannelAttributes.KnownAgentRoutingFlag}}", "KnownAgentWorkerSid":"{{trigger.conversation.ChannelAttributes.KnownAgentWorkerSid}}"}
 ```
 
 ### TaskRouter Workflow
@@ -143,7 +143,7 @@ This workflow assumes that studio has populated the Task Attributes with
         "targets": [
           {
             "queue": "WQxxxx",
-            "known_worker_friendly_name": "task.KnownAgentWorkerFriendlyName"
+            "known_worker_sid": "task.KnownAgentWorkerSid"
           }
         ]
       }
