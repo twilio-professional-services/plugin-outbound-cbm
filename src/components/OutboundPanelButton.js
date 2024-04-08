@@ -16,6 +16,10 @@ function isOutboundCallingEnabled() {
 
 const StyledIconButton = styled(IconButton)`
   margin-right: ${(props) => props.theme.tokens.spacings.space30};
+  &:hover {
+    background-color: ${(props) =>
+    props.theme.tokens.backgroundColors.colorBackgroundInverseStrong};
+  }
   &:focus-visible {
     border-color: ${(props) =>
       props.theme.tokens.borderColors.colorBorderInverse};

@@ -32,7 +32,7 @@ Our docs cover WhatsApp Templates in more detail [here.](https://www.twilio.com/
 Note this is a POC/example of how to implement outbound messaging. In a production deployment consideration should be give to:
 
 - Provide additional logic to not allow free form messages outside of the 24 hour session (one option could be to track whatsapp numbers and last inbound message in a Sync map. (Consider Sync RPS and object limits in large applications) )
-- Outside of the 24 hour session enforce that templates can be used and allow for dynamic content to be inserted into the outbound template message according to the template placeholdes {{...}}
+- Outside of the 24 hour session enforce that templates can be used and allow for dynamic content to be inserted into the outbound template message according to the template placeholders {{...}}
 - The canned messages/templates are hard coded in src/utils/templates.js. A more flexible option would be to have an endpoint that the plugin can reach out to GET the current templates from a config file.
 
 ## Actions
@@ -64,11 +64,12 @@ The plugin adds two [Flex actions](https://www.twilio.com/docs/flex/developer/ui
 
 ## Setup
 
-### Pre-Requsites for Setup
+### Pre-Requisites for Setup
 
 - An active Twilio account with Flex provisioned. Refer to the [Flex Quickstart](https://www.twilio.com/docs/flex/quickstart/flex-basics#sign-up-for-or-sign-in-to-twilio-and-create-a-new-flex-project") to create one.
-- npm version 5.0.0 or later installed (type `npm -v` in your terminal to check)
-- Node.js version 12 or later installed (type `node -v` in your terminal to check)
+- A phone number or Whatsapp sender [configured for Flex Conversations](https://www.twilio.com/docs/flex/admin-guide/setup/conversations/manage-conversations-sms-addresses)
+- npm version 9.0.0 or later installed (type `npm -v` in your terminal to check)
+- Node.js version 18 or later installed (type `node -v` in your terminal to check)
 - [Twilio CLI](https://www.twilio.com/docs/twilio-cli/quickstart#install-twilio-cli) along with the [Flex CLI Plugin](https://www.twilio.com/docs/twilio-cli/plugins#available-plugins) and the [Serverless Plugin](https://www.twilio.com/docs/twilio-cli/plugins#available-plugins). Run the following commands to install them:
 
   ```bash
@@ -96,10 +97,10 @@ Copy the template.env to .env and update the sids, phone number to be a Twilio n
 
 ```
 FLEX_APP_TWILIO_SERVERLESS_DOMAIN=https://xxx.twil.io
-FLEX_APP_WORKSPACE_SID=WSxxx
-FLEX_APP_WORKFLOW_SID=WWxxx
-FLEX_APP_QUEUE_SID=WQxxx
-FLEX_APP_INBOUND_STUDIO_FLOW=FWxxx
+FLEX_APP_WORKSPACE_SID=WSxxx  # Used for creating an outbound chat task
+FLEX_APP_WORKFLOW_SID=WWxxx  # Used for creating an outbound chat task
+FLEX_APP_QUEUE_SID=WQxxx  # Used for creating an outbound chat task
+FLEX_APP_INBOUND_STUDIO_FLOW=FWxxx  # Used for handling the reply of outbound chats without a task
 FLEX_APP_TWILIO_FROM_NUMBER=+1xxxx
 FLEX_APP_TWILIO_WHATSAPP_FROM_NUMBER=+1xxxx
 ```
@@ -118,7 +119,7 @@ After testing the plugin locally you can deploy the plugin to your account using
 
 ### Studio SendToFlex
 
-To handle the use case of inbound replies from the customer needing to create a task and optionally routing it to the agent that initiated the outbound message we will make use of the sendOutboundSMS function populating the converstations channel attributes.
+To handle the use case of inbound replies from the customer needing to create a task and optionally routing it to the agent that initiated the outbound message we will make use of the sendOutboundSMS function populating the conversations channel attributes.
 
 These are then available in the trigger and modifying the SendToFlex attributes as below will populate the task attributes for the TaskRouter Workflow.
 

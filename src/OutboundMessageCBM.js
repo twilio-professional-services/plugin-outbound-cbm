@@ -31,21 +31,21 @@ export default class OutboundMessageCBM extends FlexPlugin {
       <OutboundMessagePanel key="outbound-message-panel" />
     );
 
+    // Remove the OOB button so that we can disable it when our panel is open
     flex.MainHeader.Content.remove("dialpad-button");
+    flex.MainHeader.Content.add(
+      <OutboundPanelButton
+        outboundPanelType="message"
+        key="message-dialpad-button"
+      />,
+      { sortOrder: 1, align: "end" }
+    );
     flex.MainHeader.Content.add(
       <OutboundPanelButton
         outboundPanelType="voice"
         key="voice-dialpad-button"
       />,
       { sortOrder: 1, align: "end" }
-    );
-
-    flex.MainHeader.Content.add(
-      <OutboundPanelButton
-        outboundPanelType="message"
-        key="message-dialpad-button"
-      />,
-      { sortOrder: 0, align: "end" }
     );
   }
 }

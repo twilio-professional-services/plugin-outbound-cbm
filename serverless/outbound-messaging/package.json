@@ -8,14 +8,14 @@
     "deploy": "twilio-run deploy"
   },
   "dependencies": {
-    "@twilio/runtime-handler": "1.2.3",
-    "twilio": "*",
+    "@twilio/runtime-handler": "2.0.0",
+    "twilio": "^4.23.0",
     "twilio-flex-token-validator": "^1.5.6"
   },
   "devDependencies": {
-    "twilio-run": "^3.4.2"
+    "twilio-run": "^4.0.0"
   },
   "engines": {
-    "node": "14"
+    "node": ">=18"
   }
 }
