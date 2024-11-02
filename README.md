@@ -8,7 +8,7 @@
 
 **This plugin makes use of Conversations Based Messaging and Paste in Flex which is a dependency on Flex 2.0**
 
-## WhatsApps Templates to Content Templates (Breaking change April 1, 2025)
+## WhatsApp Templates to Content Templates (Breaking change April 1, 2025)
 
 **Prior to April 1, 2025 outbound message bodies that matched a WhatsApp template could be sent outside of [the 24 hour window](https://www.twilio.com/docs/whatsapp/key-concepts#the-24-hour-window-or-24-hour-session).**
 
