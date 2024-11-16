@@ -129,9 +129,20 @@ exports.addAgentMessageToConversation = async (
   client,
   conversation,
   WorkerFriendlyName,
-  Body
+  Body,
+  ContentTemplateSid
 ) => {
+  const messageOptions = {
+    author: WorkerFriendlyName,
+  };
+
+  if (ContentTemplateSid) {
+    messageOptions.contentSid = ContentTemplateSid;
+  } else {
+    messageOptions.body = Body;
+  }
+
   const message = await client.conversations.v1
     .conversations(conversation.sid)
-    .messages.create({ author: WorkerFriendlyName, body: Body });
+    .messages.create(messageOptions);
 };

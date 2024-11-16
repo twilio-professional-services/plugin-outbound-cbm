@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Dialer, Manager, useFlexSelector } from "@twilio/flex-ui";
 import {
   Label,
@@ -12,7 +12,6 @@ import {
   Separator,
   Box,
 } from "@twilio-paste/core";
-
 import {
   Container,
   StyledSidePanel,
@@ -20,8 +19,6 @@ import {
   MessageContainer,
   SendMessageContainer,
   MessageTypeContainer,
-  OfflineContainer,
-  ErrorIcon,
 } from "./OutboundMessagePanel.Components";
 import SendMessageMenu from "./SendMessageMenu";
 import { onSendClickHandler, handleClose } from "./clickHandlers";
@@ -39,8 +36,6 @@ const isToNumberValid = (toNumber) => {
   const phoneUtil = PhoneNumberUtil.getInstance();
   try {
     const parsedToNumber = phoneUtil.parse(toNumber);
-    const regionCode = phoneUtil.getRegionCodeForNumber(parsedToNumber);
-
     if (phoneUtil.isPossibleNumber(parsedToNumber))
       if (phoneUtil.isValidNumber(parsedToNumber)) return true;
 
@@ -51,12 +46,12 @@ const isToNumberValid = (toNumber) => {
 };
 
 const OutboundMessagePanel = (props) => {
-  // Local state
   const [toNumber, setToNumber] = useState("+1");
   const [messageBody, setMessageBody] = useState("");
   const [messageType, setMessageType] = useState("sms");
+  const [contentTemplateSid, setContentTemplateSid] = useState("");
+  const [contentTemplates, setContentTemplates] = useState([]);
 
-  // Redux state
   const isOutboundMessagePanelOpen = useFlexSelector(
     (state) =>
       state.flex.view.componentViewStates?.outboundMessagePanel
@@ -64,28 +59,56 @@ const OutboundMessagePanel = (props) => {
   );
   const worker = useFlexSelector((state) => state.flex.worker);
 
-  // valid phone number and message so OK to enable send button?
   let disableSend = true;
   const toNumberValid = isToNumberValid(toNumber);
 
   if (toNumberValid && messageBody.length) disableSend = false;
 
-  // if we navigate away clear state
+  let friendlyPhoneNumber = null;
+  const formatter = new AsYouTypeFormatter();
+  [...toNumber].forEach((c) => (friendlyPhoneNumber = formatter.inputDigit(c)));
+
+  const handleSendClicked = (menuItemClicked) => {
+    onSendClickHandler(
+      menuItemClicked,
+      toNumber,
+      messageType,
+      messageBody,
+      contentTemplateSid
+    );
+  };
+
+  useEffect(() => {
+    const fetchContentTemplates = async () => {
+      try {
+        const response = await fetch(`${process.env.FLEX_APP_TWILIO_SERVERLESS_DOMAIN}/getContentTemplates`, {
+          method: 'GET',
+          headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+          },
+          mode: 'cors',
+      });
+        const data = await response.json();
+        setContentTemplates(data.templates);
+      } catch (error) {
+        console.error("Error fetching content templates:", error);
+      }
+    };
+
+    if (messageType === "whatsapp") {
+      fetchContentTemplates();
+    } else {
+      // Clear content templates if messageType is not WhatsApp
+      setContentTemplates([]);
+    }
+  }, [messageType]);
+
   if (!isOutboundMessagePanelOpen) {
     if (toNumber !== "+1") setToNumber("+1");
     if (messageBody.length) setMessageBody("");
     return null;
   }
-
-  // convert +1661877 to +"1 661-877"
-  let friendlyPhoneNumber = null;
-  const formatter = new AsYouTypeFormatter();
-  [...toNumber].forEach((c) => (friendlyPhoneNumber = formatter.inputDigit(c)));
-
-  // Send clicked handler
-  const handleSendClicked = (menuItemClicked) => {
-    onSendClickHandler(menuItemClicked, toNumber, messageType, messageBody);
-  };
 
   return (
     <Container>
@@ -97,6 +120,7 @@ const OutboundMessagePanel = (props) => {
       >
         {isWorkerAvailable(worker) && (
           <>
+            {/* Message Type Selection */}
             <MessageTypeContainer theme={props.theme}>
               <RadioGroup
                 name="messageType"
@@ -104,6 +128,8 @@ const OutboundMessagePanel = (props) => {
                 legend="Message type"
                 onChange={(newValue) => {
                   setMessageType(newValue);
+                  setMessageBody("");
+                  setContentTemplateSid("");
                 }}
                 orientation="horizontal"
               >
@@ -111,7 +137,7 @@ const OutboundMessagePanel = (props) => {
                   SMS
                 </Radio>
                 <Radio id="whatsapp" value="whatsapp" name="whatsapp">
-                  Whatsapp
+                  WhatsApp
                 </Radio>
               </RadioGroup>
               <Text
@@ -128,6 +154,7 @@ const OutboundMessagePanel = (props) => {
               </Text>
             </MessageTypeContainer>
 
+            {/* Dialer */}
             <DialerContainer theme={props.theme}>
               <Dialer
                 key="dialer"
@@ -139,42 +166,94 @@ const OutboundMessagePanel = (props) => {
                 defaultCountryAlpha2Code={"US"}
               />
             </DialerContainer>
+
+            {/* Conditional Rendering Based on Message Type */}
             <MessageContainer theme={props.theme}>
-              <Label htmlFor="message-body">Message to send</Label>
-              <TextArea
-                theme={props.themes}
-                onChange={(event) => {
-                  setMessageBody(event.target.value);
-                }}
-                id="message-body"
-                name="message-body"
-                placeholder="Type message"
-                value={messageBody}
-              />
-              <SendMessageContainer theme={props.theme}>
-                <SendMessageMenu
-                  disableSend={disableSend}
-                  onClickHandler={handleSendClicked}
-                />
-              </SendMessageContainer>
+              {messageType === "whatsapp" ? (
+                <>
+                  {/* Content Templates Dropdown for WhatsApp */}
+                  <Label htmlFor="select_content_template">
+                    Select a Content Template
+                  </Label>
+                  <Select
+                    id="select_content_template"
+                    onChange={(e) => setContentTemplateSid(e.target.value)}
+                    value={contentTemplateSid}
+                  >
+                    <Option value="">Select a template</Option>
+                    {contentTemplates.map((template) => (
+                      <Option value={template.sid} key={template.sid}>
+                        {template.name}
+                      </Option>
+                    ))}
+                  </Select>
+                  <HelpText>
+                    Choose a content template to send via WhatsApp.
+                  </HelpText>
+                </>
+              ) : (
+                <>
+                  {/* Message Input and Templates for SMS */}
+                  <Label htmlFor="message-body">Message to send</Label>
+                  <TextArea
+                    theme={props.theme}
+                    onChange={(event) => {
+                      setMessageBody(event.target.value);
+                    }}
+                    id="message-body"
+                    name="message-body"
+                    placeholder="Type message"
+                    value={messageBody}
+                  />
+                  <SendMessageContainer theme={props.theme}>
+                    <SendMessageMenu
+                      disableSend={disableSend}
+                      onClickHandler={handleSendClicked}
+                    />
+                  </SendMessageContainer>
 
-              <Box backgroundColor="colorBackgroundBody" padding="space50">
-                <Separator orientation="horizontal" verticalSpacing="space50" />
-              </Box>
+                  <Box
+                    backgroundColor="colorBackgroundBody"
+                    padding="space50"
+                  >
+                    <Separator
+                      orientation="horizontal"
+                      verticalSpacing="space50"
+                    />
+                  </Box>
 
-              <Label htmlFor="select_template">Select a message template</Label>
-              <Select
-                id="select_template"
-                onChange={(e) => setMessageBody(e.target.value)}
-              >
-                {templates.map((template) => (
-                  <Option value={template} key={template}>
-                    {template || "Type message"}
-                  </Option>
-                ))}
-              </Select>
-              <HelpText html_for="select_template" variant="default"></HelpText>
+                  <Label htmlFor="select_template">
+                    Select a Message Template
+                  </Label>
+                  <Select
+                    id="select_template"
+                    onChange={(e) => setMessageBody(e.target.value)}
+                    value={messageBody}
+                  >
+                    {templates.map((template) => (
+                      <Option value={template} key={template}>
+                        {template || "Type message"}
+                      </Option>
+                    ))}
+                  </Select>
+                  <HelpText>
+                    Choose a predefined message template for SMS.
+                  </HelpText>
+                </>
+              )}
             </MessageContainer>
+
+            {/* Send Message Button */}
+            <SendMessageContainer theme={props.theme}>
+              <SendMessageMenu
+                disableSend={
+                  messageType === "whatsapp"
+                    ? !toNumberValid || !contentTemplateSid
+                    : !toNumberValid || !messageBody.length
+                }
+                onClickHandler={handleSendClicked}
+              />
+            </SendMessageContainer>
           </>
         )}
         {!isWorkerAvailable(worker) && (

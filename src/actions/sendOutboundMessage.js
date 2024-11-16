@@ -6,8 +6,9 @@ const sendOutboundMessage = async (sendOutboundParams) => {
     ...sendOutboundParams,
     Token: manager.store.getState().flex.session.ssoTokenPayload.token,
   };
-
-  console.log("DEBUG body", body);
+  if (body.ContentTemplateSid) {
+    delete body.body;
+  }
 
   const options = {
     method: "POST",
@@ -59,6 +60,7 @@ Actions.registerAction("SendOutboundMessage", (payload) => {
       To: payload.destination,
       From: payload.callerId,
       Body: payload.body,
+      ContentTemplateSid: payload.ContentTemplateSid,
       WorkerSid: manager.workerClient.sid,
       WorkerFriendlyName: manager.user.identity,
       WorkspaceSid: process.env.FLEX_APP_WORKSPACE_SID,
@@ -75,6 +77,7 @@ Actions.registerAction("SendOutboundMessage", (payload) => {
       To: payload.destination,
       From: payload.callerId,
       Body: payload.body,
+      ContentTemplateSid: payload.contentTemplateSid,
       WorkerSid: manager.workerClient.sid,
       WorkerFriendlyName: manager.user.identity,
       WorkspaceSid: process.env.FLEX_APP_WORKSPACE_SID, // we need this to lookup task if there is a active conversation already

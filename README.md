@@ -8,14 +8,6 @@
 
 **This plugin makes use of Conversations Based Messaging and Paste in Flex which is a dependency on Flex 2.0**
 
-## WhatsApp Templates to Content Templates (Breaking change April 1, 2025)
-
-**Prior to April 1, 2025 outbound message bodies that matched a WhatsApp template could be sent outside of [the 24 hour window](https://www.twilio.com/docs/whatsapp/key-concepts#the-24-hour-window-or-24-hour-session).**
-
-After April 1, 2025 content templates will need to be specified implicity and this plugin does not currently support this.
-
-Additional details are available here [Upgrading WhatsApp Templates to Content Templates](https://help.twilio.com/articles/19816296822299-Upgrading-WhatsApp-Templates-to-Content-Templates)
-
 ## Solution Overview
 
 This plugin is intended to demonstrate the [Interactions API](https://www.twilio.com/docs/flex/developer/conversations/interactions-api), [Flex Conversations](https://www.twilio.com/docs/flex/conversations) and [Paste](https://paste.twilio.design/). The outbound SMS and WhatsApp code was inspired by the examples in [this blog on Flex Conversations](https://www.twilio.com/blog/flex-conversations-public-beta)
