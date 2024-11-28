@@ -8,6 +8,16 @@
 
 **This plugin makes use of Conversations Based Messaging and Paste in Flex which is a dependency on Flex 2.0**
 
+## WhatsApp Templates to Content Templates (Breaking change April 1, 2025)
+
+**Prior to April 1, 2025 outbound message bodies that matched a WhatsApp template could be sent outside of [the 24 hour window](https://www.twilio.com/docs/whatsapp/key-concepts#the-24-hour-window-or-24-hour-session).**
+
+After April 1, 2025 content templates will need to be specified implicity and this plugin does not currently support this.
+
+Additional details are available here [Upgrading WhatsApp Templates to Content Templates](https://help.twilio.com/articles/19816296822299-Upgrading-WhatsApp-Templates-to-Content-Templates)
+
+_There is an optional .env parameter to enable a feature that allows content templates to be selected rather than providing a free form message body when uing WhatsApp. This is described in more detail below._
+
 ## Solution Overview
 
 This plugin is intended to demonstrate the [Interactions API](https://www.twilio.com/docs/flex/developer/conversations/interactions-api), [Flex Conversations](https://www.twilio.com/docs/flex/conversations) and [Paste](https://paste.twilio.design/). The outbound SMS and WhatsApp code was inspired by the examples in [this blog on Flex Conversations](https://www.twilio.com/blog/flex-conversations-public-beta)
@@ -153,4 +163,28 @@ This workflow assumes that studio has populated the Task Attributes with
       "queue": "WQxxxx"
     }
   }
+```
+
+### Content Templates
+
+As noted above there is a breaking change April 1, 2025 which means that the initial WhatsApp message from Twilio to the Customer that is outside of the 24 hour session must be a template. Prior to Apri 1, 2025 Twilio would take a message body that was equivalent to a template body and automatically select the template. The breaking change requires the template SID to be passed when creating the message.
+
+Kudos to @cullenwatson for his contribution that has been leveraged to add initial support for sending content templates that don't require variables.
+
+To enable this limited Content Template support update the plugin .env file _FLEX_APP_USE_CONTENT_TEMPLATES_ flag.
+
+In addition there is an optional asset file that can be used to limit the Content Templates that will be returned to the plugin.
+
+The contentTemplateFilters asset file can be updated with the account sid and list of Content Template SIDs (HXxxx). In this case for ACxxx only Content Templates HXxxx and HXyyy would be available for selection.
+
+```
+ {
+  enabled: true,
+  accounts: {
+    ACxxx: [
+      "HXxxx",
+      "HXYYY",
+    ],
+  },
+};
 ```

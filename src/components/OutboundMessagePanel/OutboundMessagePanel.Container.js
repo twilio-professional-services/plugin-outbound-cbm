@@ -19,11 +19,14 @@ import {
   MessageContainer,
   SendMessageContainer,
   MessageTypeContainer,
+  OfflineContainer,
+  ErrorIcon,
 } from "./OutboundMessagePanel.Components";
 import SendMessageMenu from "./SendMessageMenu";
 import { onSendClickHandler, handleClose } from "./clickHandlers";
 import { templates } from "../../utils/templates";
 import { PhoneNumberUtil, AsYouTypeFormatter } from "google-libphonenumber";
+import { fetchContentTemplates } from "../../utils/fetchContentTemplates";
 
 const isWorkerAvailable = (worker) => {
   const { taskrouter_offline_activity_sid } =
@@ -51,6 +54,7 @@ const OutboundMessagePanel = (props) => {
   const [messageType, setMessageType] = useState("sms");
   const [contentTemplateSid, setContentTemplateSid] = useState("");
   const [contentTemplates, setContentTemplates] = useState([]);
+  const useContentTemplates = !!process.env.FLEX_APP_USE_CONTENT_TEMPLATES;
 
   const isOutboundMessagePanelOpen = useFlexSelector(
     (state) =>
@@ -79,28 +83,14 @@ const OutboundMessagePanel = (props) => {
   };
 
   useEffect(() => {
-    const fetchContentTemplates = async () => {
-      try {
-        const response = await fetch(`${process.env.FLEX_APP_TWILIO_SERVERLESS_DOMAIN}/getContentTemplates`, {
-          method: 'GET',
-          headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json',
-          },
-          mode: 'cors',
-      });
-        const data = await response.json();
-        setContentTemplates(data.templates);
-      } catch (error) {
-        console.error("Error fetching content templates:", error);
-      }
-    };
-
     if (messageType === "whatsapp") {
-      fetchContentTemplates();
+      fetchContentTemplates().then((templates) =>
+        setContentTemplates(templates || [])
+      );
     } else {
       // Clear content templates if messageType is not WhatsApp
       setContentTemplates([]);
+      setContentTemplateSid("");
     }
   }, [messageType]);
 
@@ -169,7 +159,7 @@ const OutboundMessagePanel = (props) => {
 
             {/* Conditional Rendering Based on Message Type */}
             <MessageContainer theme={props.theme}>
-              {messageType === "whatsapp" ? (
+              {messageType === "whatsapp" && useContentTemplates ? (
                 <>
                   {/* Content Templates Dropdown for WhatsApp */}
                   <Label htmlFor="select_content_template">
@@ -212,10 +202,7 @@ const OutboundMessagePanel = (props) => {
                     />
                   </SendMessageContainer>
 
-                  <Box
-                    backgroundColor="colorBackgroundBody"
-                    padding="space50"
-                  >
+                  <Box backgroundColor="colorBackgroundBody" padding="space50">
                     <Separator
                       orientation="horizontal"
                       verticalSpacing="space50"

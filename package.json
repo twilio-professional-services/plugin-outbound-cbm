@@ -1,6 +1,6 @@
 {
   "name": "outbound-cbm",
-  "version": "0.0.2",
+  "version": "0.0.5",
   "private": true,
   "scripts": {
     "postinstall": "flex-plugin pre-script-check"
