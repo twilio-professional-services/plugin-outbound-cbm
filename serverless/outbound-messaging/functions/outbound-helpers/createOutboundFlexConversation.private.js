@@ -5,15 +5,14 @@ exports.createOutboundFlexConversation = async (
   To,
   From,
   Body,
+  ContentTemplateSid,
   WorkerFriendlyName,
   routingProperties
 ) => {
   const channelType = To.startsWith("whatsapp") ? "whatsapp" : "sms";
-  console.log(To, From, Body, WorkerFriendlyName, routingProperties);
-
   // Note that we are passing in an existing conversation sid.
   // In some use cases for outbound agent initiated conversations (and in many of the Twilio docs)
-  // instead of passing in the conversation sid then the customer/twilio number participant is passed
+  // instead of passing in the conversation sid then the customer/Twilio number participant is passed
   // and the interactions endpoint would create a new conversation for us.
   // We don't do this for this use case as we had created the conversation in advance to catch the scenario
   // of an existing active conversation.
@@ -39,15 +38,23 @@ exports.createOutboundFlexConversation = async (
     },
   });
 
-  console.log(interaction);
   const taskAttributes = JSON.parse(interaction.routing.properties.attributes);
-  console.log(taskAttributes);
 
+  // Prepare message options
+  let messageOptions = {
+    author: WorkerFriendlyName,
+  };
+
+  if (channelType === 'whatsapp' && ContentTemplateSid) {
+    messageOptions.contentSid = ContentTemplateSid;
+  } else {
+    messageOptions.body = Body;
+  }
+
+  // Send the initial message
   const message = await client.conversations.v1
     .conversations(taskAttributes.conversationSid)
-    .messages.create({ author: WorkerFriendlyName, body: Body });
-
-  console.log(message);
+    .messages.create(messageOptions);
 
   return {
     success: true,
