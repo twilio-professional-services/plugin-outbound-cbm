@@ -54,8 +54,9 @@ const OutboundMessagePanel = (props) => {
   const [messageType, setMessageType] = useState("sms");
   const [contentTemplateSid, setContentTemplateSid] = useState("");
   const [contentTemplates, setContentTemplates] = useState([]);
-  const useContentTemplates =
-    process.env.FLEX_APP_USE_CONTENT_TEMPLATES.toLocaleLowerCase() === "true";
+  const useContentTemplates = process.env.FLEX_APP_USE_CONTENT_TEMPLATES
+    ? process.env.FLEX_APP_USE_CONTENT_TEMPLATES.toLowerCase() === "true"
+    : false;
 
   const isOutboundMessagePanelOpen = useFlexSelector(
     (state) =>
