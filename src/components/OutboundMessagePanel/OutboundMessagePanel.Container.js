@@ -54,7 +54,8 @@ const OutboundMessagePanel = (props) => {
   const [messageType, setMessageType] = useState("sms");
   const [contentTemplateSid, setContentTemplateSid] = useState("");
   const [contentTemplates, setContentTemplates] = useState([]);
-  const useContentTemplates = !!process.env.FLEX_APP_USE_CONTENT_TEMPLATES;
+  const useContentTemplates =
+    process.env.FLEX_APP_USE_CONTENT_TEMPLATES.toLocaleLowerCase() === "true";
 
   const isOutboundMessagePanelOpen = useFlexSelector(
     (state) =>
@@ -183,7 +184,7 @@ const OutboundMessagePanel = (props) => {
                 </>
               ) : (
                 <>
-                  {/* Message Input and Templates for SMS */}
+                  {/* Message Input and Message selector*/}
                   <Label htmlFor="message-body">Message to send</Label>
                   <TextArea
                     theme={props.theme}
@@ -195,12 +196,6 @@ const OutboundMessagePanel = (props) => {
                     placeholder="Type message"
                     value={messageBody}
                   />
-                  <SendMessageContainer theme={props.theme}>
-                    <SendMessageMenu
-                      disableSend={disableSend}
-                      onClickHandler={handleSendClicked}
-                    />
-                  </SendMessageContainer>
 
                   <Box backgroundColor="colorBackgroundBody" padding="space50">
                     <Separator
@@ -209,9 +204,7 @@ const OutboundMessagePanel = (props) => {
                     />
                   </Box>
 
-                  <Label htmlFor="select_template">
-                    Select a Message Template
-                  </Label>
+                  <Label htmlFor="select_template">Select a Message</Label>
                   <Select
                     id="select_template"
                     onChange={(e) => setMessageBody(e.target.value)}
@@ -223,14 +216,11 @@ const OutboundMessagePanel = (props) => {
                       </Option>
                     ))}
                   </Select>
-                  <HelpText>
-                    Choose a predefined message template for SMS.
-                  </HelpText>
+                  <HelpText>Choose a predefined message to send.</HelpText>
                 </>
               )}
             </MessageContainer>
 
-            {/* Send Message Button */}
             <SendMessageContainer theme={props.theme}>
               <SendMessageMenu
                 disableSend={
