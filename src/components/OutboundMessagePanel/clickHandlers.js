@@ -11,15 +11,14 @@ export const onSendClickHandler = (
   contentTemplateSid
 ) => {
   let payload = {
-    destination:
-      messageType === "whatsapp" ? "whatsapp:" + toNumber : toNumber,
+    destination: messageType === "whatsapp" ? "whatsapp:" + toNumber : toNumber,
     callerId:
       messageType === "whatsapp"
         ? "whatsapp:" + process.env.FLEX_APP_TWILIO_WHATSAPP_FROM_NUMBER
         : process.env.FLEX_APP_TWILIO_FROM_NUMBER,
     body: messageBody,
-    ContentTemplateSid: contentTemplateSid, // Add contentTemplateSid to the payload
-    messageType: messageType,
+    contentTemplateSid,
+    messageType,
     openChat: true,
     routeToMe: true,
   };

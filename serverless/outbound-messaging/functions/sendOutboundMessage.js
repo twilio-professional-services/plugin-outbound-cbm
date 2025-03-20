@@ -116,6 +116,7 @@ exports.handler = TokenValidator(async function (context, event, callback) {
         client,
         customerConversation,
         Body,
+        ContentTemplateSid,
         KnownAgentRoutingFlag,
         WorkerFriendlyName,
         WorkerSid,

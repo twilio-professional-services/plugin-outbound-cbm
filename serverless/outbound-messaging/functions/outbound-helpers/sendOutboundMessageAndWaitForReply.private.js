@@ -15,6 +15,7 @@ exports.sendOutboundMessageAndWaitForReply = async (
   client,
   conversation,
   Body,
+  ContentTemplateSid,
   KnownAgentRoutingFlag,
   WorkerFriendlyName,
   WorkerSid,
@@ -43,7 +44,8 @@ exports.sendOutboundMessageAndWaitForReply = async (
     client,
     conversation,
     WorkerFriendlyName,
-    Body
+    Body,
+    ContentTemplateSid
   );
 
   return { success: true, conversationSid: conversation.sid };

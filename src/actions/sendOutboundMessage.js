@@ -60,7 +60,7 @@ Actions.registerAction("SendOutboundMessage", (payload) => {
       To: payload.destination,
       From: payload.callerId,
       Body: payload.body,
-      ContentTemplateSid: payload.ContentTemplateSid,
+      ContentTemplateSid: payload.contentTemplateSid,
       WorkerSid: manager.workerClient.sid,
       WorkerFriendlyName: manager.user.identity,
       WorkspaceSid: process.env.FLEX_APP_WORKSPACE_SID,
