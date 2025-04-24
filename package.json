@@ -3,6 +3,10 @@
   "version": "0.0.5",
   "private": true,
   "scripts": {
+    "start": "twilio flex:plugins:start",
+    "build": "twilio flex:plugins:build",
+    "deploy": "twilio flex:plugins:deploy",
+    "release": "twilio flex:plugins:release --major --changelog=\"Release from CI/CD\"",
     "postinstall": "flex-plugin pre-script-check"
   },
   "dependencies": {
