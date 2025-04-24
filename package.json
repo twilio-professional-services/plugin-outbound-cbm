@@ -6,7 +6,8 @@
     "start": "twilio flex:plugins:start",
     "build": "twilio flex:plugins:build",
     "deploy": "twilio flex:plugins:deploy",
-    "release": "twilio flex:plugins:release --major --changelog=\"Release from CI/CD\""
+    "release": "twilio flex:plugins:release --major --changelog=\"Release from CI/CD\"",
+    "install-flex-plugin": "echo 'Skipping install-flex-plugin in CI'"
   },
   "dependencies": {
     "@twilio-paste/core": "^17.0.1",
