@@ -39,10 +39,9 @@ const isToNumberValid = (toNumber) => {
   const phoneUtil = PhoneNumberUtil.getInstance();
   try {
     const parsedToNumber = phoneUtil.parse(toNumber);
-    if (phoneUtil.isPossibleNumber(parsedToNumber))
-      if (phoneUtil.isValidNumber(parsedToNumber)) return true;
-
-    return false;
+    const isPossibleNumber = phoneUtil.isPossibleNumber(parsedToNumber);
+    const isValidNumber = phoneUtil.isValidNumber(parsedToNumber);
+    return isPossibleNumber && isValidNumber;
   } catch (error) {
     return false;
   }
@@ -57,6 +56,17 @@ const OutboundMessagePanel = (props) => {
   const useContentTemplates = process.env.FLEX_APP_USE_CONTENT_TEMPLATES
     ? process.env.FLEX_APP_USE_CONTENT_TEMPLATES.toLowerCase() === "true"
     : false;
+  const toNumberValid = isToNumberValid(toNumber);
+
+  const isWhatsApp = messageType === "whatsapp";
+  const isToNumberInvalid = !toNumberValid;
+  const isContentTemplateMissing = !contentTemplateSid;
+  const isMessageBodyEmpty = !messageBody.length;
+
+  const shouldBlockSend = isWhatsApp
+      ? isToNumberInvalid || (isContentTemplateMissing && isMessageBodyEmpty)
+      : isToNumberInvalid || isMessageBodyEmpty;
+
 
   const isOutboundMessagePanelOpen = useFlexSelector(
     (state) =>
@@ -65,10 +75,6 @@ const OutboundMessagePanel = (props) => {
   );
   const worker = useFlexSelector((state) => state.flex.worker);
 
-  let disableSend = true;
-  const toNumberValid = isToNumberValid(toNumber);
-
-  if (toNumberValid && messageBody.length) disableSend = false;
 
   let friendlyPhoneNumber = null;
   const formatter = new AsYouTypeFormatter();
@@ -125,9 +131,9 @@ const OutboundMessagePanel = (props) => {
                 }}
                 orientation="horizontal"
               >
-                <Radio id="sms" value="sms" name="sms">
-                  SMS
-                </Radio>
+                {/*<Radio id="sms" value="sms" name="sms">*/}
+                {/*  SMS*/}
+                {/*</Radio>*/}
                 <Radio id="whatsapp" value="whatsapp" name="whatsapp">
                   WhatsApp
                 </Radio>
@@ -224,11 +230,7 @@ const OutboundMessagePanel = (props) => {
 
             <SendMessageContainer theme={props.theme}>
               <SendMessageMenu
-                disableSend={
-                  messageType === "whatsapp"
-                    ? !toNumberValid || !contentTemplateSid
-                    : !toNumberValid || !messageBody.length
-                }
+                disableSend={shouldBlockSend}
                 onClickHandler={handleSendClicked}
               />
             </SendMessageContainer>
