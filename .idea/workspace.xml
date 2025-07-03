@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="681eebad-587e-49cb-97e7-41f34005af01" name="Changes" comment="Fixed logic in OutboundMessagePanel to allow sending WhatsApp messages if either a content template or a message body is provided.&#10;&#10;Updated shouldBlockSend condition to support this new behavior." />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="master" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "YuraDukhnoAman"
+  }
+}]]></component>
+  <component name="GitToolBoxStore">
+    <option name="recentBranches">
+      <RecentBranches>
+        <option name="branchesForRepo">
+          <list>
+            <RecentBranchesForRepo>
+              <option name="branches">
+                <list>
+                  <RecentBranch>
+                    <option name="branchName" value="bug/disable-sms" />
+                    <option name="lastUsedInstant" value="1748523675" />
+                  </RecentBranch>
+                  <RecentBranch>
+                    <option name="branchName" value="master" />
+                    <option name="lastUsedInstant" value="1748523609" />
+                  </RecentBranch>
+                  <RecentBranch>
+                    <option name="branchName" value="bug/Outbound-CBM-Master-not-working-4095" />
+                    <option name="lastUsedInstant" value="1748522728" />
+                  </RecentBranch>
+                </list>
+              </option>
+              <option name="repositoryRootUrl" value="file://$PROJECT_DIR$" />
+            </RecentBranchesForRepo>
+          </list>
+        </option>
+      </RecentBranches>
+    </option>
+  </component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/TwilioByAman/plugin-outbound-cbm.git",
+    "accountId": "4b7cc277-8ec2-4646-9856-94ae66797bf8"
+  },
+  "recentNewPullRequestHead": {
+    "server": {
+      "useHttp": false,
+      "host": "github.com",
+      "port": null,
+      "suffix": null
+    },
+    "owner": "TwilioByAman",
+    "repository": "plugin-outbound-cbm"
+  }
+}]]></component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
+  </component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "associatedIndex": 5
+}]]></component>
+  <component name="ProjectId" id="2xliVBqTIKLuTQiA4kYFmTLrwW7" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "git-widget-placeholder": "bug/disable-sms",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "ts.external.directory.path": "/Applications/WebStorm.app/Contents/plugins/javascript-plugin/jsLanguageServicesImpl/external"
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
+    </key>
+  </component>
+  <component name="RunManager">
+    <configuration name="start" type="js.build_tools.npm" nameIsGenerated="true">
+      <package-json value="$PROJECT_DIR$/package.json" />
+      <command value="run" />
+      <scripts>
+        <script value="start" />
+      </scripts>
+      <node-interpreter value="project" />
+      <envs />
+      <method v="2" />
+    </configuration>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-js-predefined-d6986cc7102b-6a121458b545-JavaScript-WS-251.25410.117" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="681eebad-587e-49cb-97e7-41f34005af01" name="Changes" comment="" />
+      <created>1748519081871</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1748519081871</updated>
+      <workItem from="1748519082931" duration="10396000" />
+    </task>
+    <task id="LOCAL-00001" summary="remove sms and shouldBlockSend changed">
+      <option name="closed" value="true" />
+      <created>1748522761592</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1748522761592</updated>
+    </task>
+    <task id="LOCAL-00002" summary="remove sms and shouldBlockSend changed">
+      <option name="closed" value="true" />
+      <created>1748523468516</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1748523468516</updated>
+    </task>
+    <task id="LOCAL-00003" summary="remove sms and shouldBlockSend changed">
+      <option name="closed" value="true" />
+      <created>1748523719622</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1748523719622</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Fixed logic in OutboundMessagePanel to allow sending WhatsApp messages if either a content template or a message body is provided.&#10;&#10;Updated shouldBlockSend condition to support this new behavior.">
+      <option name="closed" value="true" />
+      <created>1748752902990</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1748752902990</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="remove sms and shouldBlockSend changed" />
+    <MESSAGE value="Fixed logic in OutboundMessagePanel to allow sending WhatsApp messages if either a content template or a message body is provided.&#10;&#10;Updated shouldBlockSend condition to support this new behavior." />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixed logic in OutboundMessagePanel to allow sending WhatsApp messages if either a content template or a message body is provided.&#10;&#10;Updated shouldBlockSend condition to support this new behavior." />
+  </component>
+</project>
