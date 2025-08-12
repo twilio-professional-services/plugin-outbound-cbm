@@ -65,10 +65,15 @@ const OutboundMessagePanel = (props) => {
   );
   const worker = useFlexSelector((state) => state.flex.worker);
 
-  let disableSend = true;
   const toNumberValid = isToNumberValid(toNumber);
+  const isWhatsApp = messageType === "whatsapp";
+  const isToNumberInvalid = !toNumberValid;
+  const isContentTemplateMissing = !contentTemplateSid;
+  const isMessageBodyEmpty = !messageBody.length;
 
-  if (toNumberValid && messageBody.length) disableSend = false;
+  const shouldBlockSend = isWhatsApp
+    ? isToNumberInvalid || (isContentTemplateMissing && isMessageBodyEmpty)
+    : isToNumberInvalid || isMessageBodyEmpty;
 
   let friendlyPhoneNumber = null;
   const formatter = new AsYouTypeFormatter();
@@ -224,11 +229,7 @@ const OutboundMessagePanel = (props) => {
 
             <SendMessageContainer theme={props.theme}>
               <SendMessageMenu
-                disableSend={
-                  messageType === "whatsapp"
-                    ? !toNumberValid || !contentTemplateSid
-                    : !toNumberValid || !messageBody.length
-                }
+                disableSend={shouldBlockSend}
                 onClickHandler={handleSendClicked}
               />
             </SendMessageContainer>
