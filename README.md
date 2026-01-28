@@ -92,7 +92,7 @@ The plugin adds two [Flex actions](https://www.twilio.com/docs/flex/developer/ui
 
 ### Serverless
 
-Deploy the sendOutboundSMS function
+Deploy the serverless functions
 
 ```
 cd serverless/outbound-messaging
@@ -103,7 +103,7 @@ and note the domain that is created (we will add this to the plugin config)
 
 ### Run Plugin Locally
 
-Copy the template.env to .env and update the sids, phone number to be a Twilio number within the account and the domain that was created during the Serverless deployment.
+Copy the `template.env` file to a new `.env` file and update the sids, phone number to be a Twilio number within the account and the domain that was created during the Serverless deployment.
 
 ```
 FLEX_APP_TWILIO_SERVERLESS_DOMAIN=https://xxx.twil.io
@@ -126,6 +126,16 @@ twilio flex:plugins:start
 ### Deploy Plugin
 
 After testing the plugin locally you can deploy the plugin to your account using the [Flex Plugins CLI](https://www.twilio.com/docs/flex/developer/plugins/cli/deploy-and-release)
+
+Run the following command to start the deployment:
+
+```bash
+twilio flex:plugins:deploy --major --changelog "Notes for this version" --description "Functionality of the plugin"
+```
+
+After your deployment runs you will receive instructions for releasing your plugin from the bash prompt. You can use this or skip this step and release your plugin from the Flex plugin dashboard here https://flex.twilio.com/admin/plugins
+
+For more details on deploying your plugin, refer to the [deploying your plugin guide](https://www.twilio.com/docs/flex/plugins#deploying-your-plugin).
 
 ### Studio SendToFlex
 
@@ -163,6 +173,7 @@ This workflow assumes that studio has populated the Task Attributes with
       "queue": "WQxxxx"
     }
   }
+}
 ```
 
 ### Content Templates
