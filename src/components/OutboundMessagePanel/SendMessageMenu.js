@@ -4,7 +4,7 @@ import {
   Menu,
   MenuSeparator,
   useMenuState,
-} from "@twilio-paste/core";
+} from "@twilio-paste/core/menu";
 import { ChevronDownIcon } from "@twilio-paste/icons/esm/ChevronDownIcon";
 
 const SendMessageMenu = (props) => {

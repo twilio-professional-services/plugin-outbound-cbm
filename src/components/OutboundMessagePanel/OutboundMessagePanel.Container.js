@@ -1,17 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { Dialer, Manager, useFlexSelector } from "@twilio/flex-ui";
-import {
-  Label,
-  TextArea,
-  RadioGroup,
-  Radio,
-  Text,
-  Select,
-  Option,
-  HelpText,
-  Separator,
-  Box,
-} from "@twilio-paste/core";
+import { Label } from "@twilio-paste/core/label";
+import { TextArea } from "@twilio-paste/core/textarea";
+import { Radio, RadioGroup } from "@twilio-paste/core/radio-group";
+import { Text } from "@twilio-paste/core/text";
+import { Select, Option } from "@twilio-paste/core/select";
+import { HelpText } from "@twilio-paste/core/help-text";
+import { Separator } from "@twilio-paste/core/separator";
+import { Box } from "@twilio-paste/core/box";
 import {
   Container,
   StyledSidePanel,
@@ -193,7 +189,6 @@ const OutboundMessagePanel = (props) => {
                   {/* Message Input and Message selector*/}
                   <Label htmlFor="message-body">Message to send</Label>
                   <TextArea
-                    theme={props.theme}
                     onChange={(event) => {
                       setMessageBody(event.target.value);
                     }}
@@ -203,7 +198,7 @@ const OutboundMessagePanel = (props) => {
                     value={messageBody}
                   />
 
-                  <Box backgroundColor="colorBackgroundBody" padding="space50">
+                  <Box backgroundColor="colorBackgroundBody">
                     <Separator
                       orientation="horizontal"
                       verticalSpacing="space50"

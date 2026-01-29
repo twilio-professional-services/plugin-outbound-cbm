@@ -1,7 +1,5 @@
 import React from "react";
-import { IconButton } from "@twilio/flex-ui";
-import styled from "@emotion/styled";
-import { Actions, Manager } from "@twilio/flex-ui";
+import { Actions, Manager, IconButton, styled } from "@twilio/flex-ui";
 import { connect } from "react-redux";
 
 function onCloseClick(actionType) {
