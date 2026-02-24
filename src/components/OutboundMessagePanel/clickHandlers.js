@@ -6,6 +6,7 @@ export const handleClose = () => {
 export const onSendClickHandler = (
   menuItemClicked,
   toNumber,
+  fromNumber,
   messageType,
   messageBody,
   contentTemplateSid
@@ -14,8 +15,8 @@ export const onSendClickHandler = (
     destination: messageType === "whatsapp" ? "whatsapp:" + toNumber : toNumber,
     callerId:
       messageType === "whatsapp"
-        ? "whatsapp:" + process.env.FLEX_APP_TWILIO_WHATSAPP_FROM_NUMBER
-        : process.env.FLEX_APP_TWILIO_FROM_NUMBER,
+        ? "whatsapp:" + fromNumber
+        : fromNumber,
     body: messageBody,
     contentTemplateSid,
     messageType,

@@ -49,8 +49,10 @@ const sendOutboundMessage = async (sendOutboundParams) => {
 // TODO - fallback and try and use outbound calling setup sids
 // TODO - allow override of queue from action payload
 Actions.registerAction("SendOutboundMessage", (payload) => {
-  if (!payload.callerId)
-    payload.callerId = process.env.FLEX_APP_TWILIO_FROM_NUMBER;
+  if (!payload.callerId) {
+    const fromNumbers = (payload.messageType == "whatsapp" ? process.env.FLEX_APP_TWILIO_WHATSAPP_FROM_NUMBER : process.env.FLEX_APP_TWILIO_FROM_NUMBER).split(',');
+    payload.callerId = fromNumbers[0];
+  }
 
   if (payload.openChat) {
     // create a task immediately

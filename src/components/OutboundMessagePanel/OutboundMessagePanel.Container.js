@@ -53,6 +53,9 @@ const OutboundMessagePanel = (props) => {
   const useContentTemplates = process.env.FLEX_APP_USE_CONTENT_TEMPLATES
     ? process.env.FLEX_APP_USE_CONTENT_TEMPLATES.toLowerCase() === "true"
     : false;
+  const fromNumbers = process.env.FLEX_APP_TWILIO_FROM_NUMBER.split(',');
+  const whatsappFromNumbers = process.env.FLEX_APP_TWILIO_WHATSAPP_FROM_NUMBER.split(',');
+  const [fromNumber, setFromNumber] = useState(fromNumbers[0]);
 
   const isOutboundMessagePanelOpen = useFlexSelector(
     (state) =>
@@ -79,6 +82,7 @@ const OutboundMessagePanel = (props) => {
     onSendClickHandler(
       menuItemClicked,
       toNumber,
+      fromNumber,
       messageType,
       messageBody,
       contentTemplateSid
@@ -87,10 +91,12 @@ const OutboundMessagePanel = (props) => {
 
   useEffect(() => {
     if (messageType === "whatsapp") {
+      setFromNumber(whatsappFromNumbers[0]);
       fetchContentTemplates().then((templates) =>
         setContentTemplates(templates || [])
       );
     } else {
+      setFromNumber(fromNumbers[0]);
       // Clear content templates if messageType is not WhatsApp
       setContentTemplates([]);
       setContentTemplateSid("");
@@ -159,6 +165,26 @@ const OutboundMessagePanel = (props) => {
                 defaultCountryAlpha2Code={"US"}
               />
             </DialerContainer>
+
+            {((messageType == "sms" && fromNumbers.length > 1) || (messageType == "whatsapp" && whatsappFromNumbers.length > 1)) && (
+              <MessageContainer theme={props.theme}>
+                <Label htmlFor="select_from_number">
+                  Send message from
+                </Label>
+                <Select
+                  id="select_from_number"
+                  onChange={(e) => setFromNumber(e.target.value)}
+                  value={fromNumber}
+                >
+                  <Option value="" disabled>Select a number</Option>
+                  {(messageType == "whatsapp" ? whatsappFromNumbers : fromNumbers).map((number) => (
+                    <Option value={number} key={number}>
+                      {number}
+                    </Option>
+                  ))}
+                </Select>
+              </MessageContainer>
+            )}
 
             {/* Conditional Rendering Based on Message Type */}
             <MessageContainer theme={props.theme}>

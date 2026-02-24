@@ -57,15 +57,6 @@ The plugin adds two [Flex actions](https://www.twilio.com/docs/flex/developer/ui
 
   Sends the message and is triggered from the Send message button
 
-  ```
-  payload :
-  {destination (To Number),
-  callerId (From Number)
-  routeToMe (bool flag to indicate if inbound message should route to this agent)},
-  openChat (bool to indicate if message chat should open when sending the message),
-  body (the message to send)
-  ```
-
 ## Screenshots
 
 <img height="700px" src="screenshots/outboundMessagePanel.png"/>
@@ -111,8 +102,8 @@ FLEX_APP_WORKSPACE_SID=WSxxx  # Used for creating an outbound chat task
 FLEX_APP_WORKFLOW_SID=WWxxx  # Used for creating an outbound chat task
 FLEX_APP_QUEUE_SID=WQxxx  # Used for creating an outbound chat task
 FLEX_APP_INBOUND_STUDIO_FLOW=FWxxx  # Used for handling the reply of outbound chats without a task
-FLEX_APP_TWILIO_FROM_NUMBER=+1xxxx
-FLEX_APP_TWILIO_WHATSAPP_FROM_NUMBER=+1xxxx
+FLEX_APP_TWILIO_FROM_NUMBER=+1xxxx  # Comma separated to offer multiple senders
+FLEX_APP_TWILIO_WHATSAPP_FROM_NUMBER=+1xxxx  # Comma separated to offer multiple senders
 ```
 
 ```
